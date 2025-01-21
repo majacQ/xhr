@@ -1,18 +1,19 @@
 <pre class=metadata>
 Group: WHATWG
+Status: RD
+Date: 2022-08-15
 H1: XMLHttpRequest
 Shortname: xhr
 Text Macro: TWITTER xhrstandard
-Text Macro: LATESTRD 2024-02
+Text Macro: LATESTRD 2022-08
 Abstract: The XMLHttpRequest Standard defines an API that provides scripted client functionality for transferring data between a client and a server.
 Translation: ja https://triple-underscore.github.io/XHR-ja.html
 Translate IDs: enumdef-xmlhttprequestresponsetype xmlhttprequestresponsetype,dictdef-progresseventinit progresseventinit,typedefdef-formdataentryvalue formdataentryvalue
 </pre>
 
-<!-- Temporary: https://github.com/w3c/webdriver-bidi/issues/358 -->
-<pre class=link-defaults>
-spec:webdriver-bidi; type:dfn; text:event
-spec:fetch; type:dfn; for:/; text:credentials
+<pre class=anchors>
+urlPrefix: https://w3c.github.io/DOM-Parsing/; spec: dom-parsing
+    type: dfn; text: fragment serializing algorithm; url: dfn-fragment-serializing-algorithm
 </pre>
 
 
@@ -279,13 +280,13 @@ constructor steps are:
 <i>headers received</i>, or <i>loading</i>, and it has one or more
 <a>event listeners</a>
 registered whose <b>type</b> is one of
-{{XMLHttpRequest/readystatechange}},
-{{XMLHttpRequestEventTarget/progress}},
-{{XMLHttpRequestEventTarget/abort}},
-{{XMLHttpRequestEventTarget/error}},
-{{XMLHttpRequestEventTarget/load}},
-{{XMLHttpRequestEventTarget/timeout!!event}}, and
-{{XMLHttpRequestEventTarget/loadend}}.
+<a event><code>readystatechange</code></a>,
+<a event><code>progress</code></a>,
+<a event><code>abort</code></a>,
+<a event><code>error</code></a>,
+<a event><code>load</code></a>,
+<a event><code>timeout</code></a>, and
+<a event><code>loadend</code></a>.
 <!-- No need to mention upload event listeners as they happen during /opened/. -->
 
 <p>If an {{XMLHttpRequest}} object is garbage collected while its connection is still open, the user
@@ -309,25 +310,25 @@ from {{XMLHttpRequestEventTarget}} as attributes:
  <tbody>
   <tr>
    <td><dfn id=handler-xhr-onloadstart attribute for=XMLHttpRequestEventTarget><code>onloadstart</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/loadstart}}
+   <td><a event><code>loadstart</code></a>
   <tr>
    <td><dfn id=handler-xhr-onprogress attribute for=XMLHttpRequestEventTarget><code>onprogress</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/progress}}
+   <td><a event><code>progress</code></a>
   <tr>
    <td><dfn id=handler-xhr-onabort attribute for=XMLHttpRequestEventTarget><code>onabort</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/abort}}
+   <td><a event><code>abort</code></a>
   <tr>
    <td><dfn id=handler-xhr-onerror attribute for=XMLHttpRequestEventTarget><code>onerror</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/error}}
+   <td><a event><code>error</code></a>
   <tr>
    <td><dfn id=handler-xhr-onload attribute for=XMLHttpRequestEventTarget><code>onload</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/load}}
+   <td><a event><code>load</code></a>
   <tr>
    <td><dfn id=handler-xhr-ontimeout attribute for=XMLHttpRequestEventTarget><code>ontimeout</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/timeout!!event}}
+   <td><a event><code>timeout</code></a>
   <tr>
    <td><dfn id=handler-xhr-onloadend attribute for=XMLHttpRequestEventTarget><code>onloadend</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/loadend}}
+   <td><a event><code>loadend</code></a>
 </table>
 
 <p>The following is the
@@ -444,9 +445,11 @@ method steps are:
 
  <li><p><a for=method>Normalize</a> <var>method</var>.
 
- <li><p>Let <var>parsedURL</var> be the result of
- <a lt="encoding-parse a URL">encoding-parsing a URL</a> <var>url</var>, relative to <a>this</a>'s
- <a>relevant settings object</a>.
+ <li><p>Let <var>parsedURL</var> be the result of <a lt="URL parser">parsing</a> <var>url</var> with
+ <a>this</a>'s <a>relevant settings object</a>'s
+ <a for="environment settings object">API base URL</a> and <a>this</a>'s
+ <a>relevant settings object</a>'s
+ <a for="environment settings object">API URL character encoding</a>.
 
  <li><p>If <var>parsedURL</var> is failure, then <a>throw</a> a "{{SyntaxError!!exception}}"
  {{DOMException}}.
@@ -521,7 +524,7 @@ the editing software used to write the XMLHttpRequest Standard.
  <dt><code><var>client</var> . <a method for=XMLHttpRequest>setRequestHeader(<var>name</var>, <var>value</var>)</a></code>
 
  <dd>
-  <p>Appends a value to an existing request header or adds a new request header.
+  <p>Combines a <a>header</a> in <a>author request headers</a>.
 
   <p>Throws an "{{InvalidStateError!!exception}}" {{DOMException}} if either <a>state</a> is not
   <i>opened</i> or the <a><code>send()</code> flag</a> is set.
@@ -549,7 +552,7 @@ method must run these steps:
 
   <p class=note>An empty byte sequence represents an empty <a>header value</a>.
 
- <li><p>If (<var>name</var>, <var>value</var>) is a <a>forbidden request-header</a>, then return.
+ <li><p>If <var>name</var> is a <a>forbidden header name</a>, then return.
 
  <li><p><a for="header list">Combine</a> (<var>name</var>, <var>value</var>) in <a>this</a>'s
  <a>author request headers</a>.
@@ -681,7 +684,7 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
    <li><p>Let <var>extractedContentType</var> be null.
 
    <li><p>If <var>body</var> is a {{Document}}, then set <a>this</a>'s <a>request body</a> to
-   <var>body</var>, <a lt="fragment serializing algorithm steps">serialized</a>,
+   <var>body</var>, <a lt="fragment serializing algorithm">serialized</a>,
    <a for=string>converted</a>, and <a lt="UTF-8 encode">UTF-8 encoded</a>.
 
    <li>
@@ -1025,12 +1028,11 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
 
  <li><p>Otherwise, if <var>xhr</var>'s <a for=XMLHttpRequest>response</a>'s
  <a for=response>aborted flag</a> is set, run the <a>request error steps</a> for <var>xhr</var>,
- <a event for=XMLHttpRequestEventTarget><code>abort</code></a>, and "{{AbortError!!exception}}"
- {{DOMException}}.
+ <a event><code>abort</code></a>, and "{{AbortError!!exception}}" {{DOMException}}.
 
  <li><p>Otherwise, if <var>xhr</var>'s <a for=XMLHttpRequest>response</a> is a
  <a for=/>network error</a>, then run the <a>request error steps</a> for <var>xhr</var>,
- {{XMLHttpRequestEventTarget/error}}, and "{{NetworkError!!exception}}" {{DOMException}}.
+ <a event><code>error</code></a>, and "{{NetworkError!!exception}}" {{DOMException}}.
 </ol>
 
 <p>The <dfn>request error steps</dfn> for an {{XMLHttpRequest}} object <var>xhr</var>,
@@ -1090,8 +1092,7 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
 
  <li><p>If <a>this</a>'s <a>state</a> is <i>opened</i> with <a>this</a>'s
  <a><code>send()</code> flag</a> set, <i>headers received</i>, or <i>loading</i>, then run the
- <a>request error steps</a> for <a>this</a> and
- <a event for=XMLHttpRequestEventTarget><code>abort</code></a>.
+ <a>request error steps</a> for <a>this</a> and <a event><code>abort</code></a>.
 
  <li>
   <p>If <a>this</a>'s <a>state</a> is <i>done</i>, then set <a>this</a>'s <a>state</a> to
@@ -1305,7 +1306,7 @@ not be web compatible.
    <li><p>If <var>charset</var> is null, then set <var>charset</var> to <a>UTF-8</a>.
 
    <li><p>Let <var>document</var> be a
-   <a for=/>document</a> that
+   <a>document</a> that
    represents the result parsing <var>xhr</var>'s <a>received bytes</a> following the rules set
    forth in the HTML Standard for an HTML parser with scripting disabled and
    <a>a known definite encoding</a> <var>charset</var>.
@@ -1316,8 +1317,8 @@ not be web compatible.
   </ol>
 
  <li>
-  <p>Otherwise, let <var>document</var> be a <a for=/>document</a> that represents the result of
-  running the <a>XML parser</a> with <a>XML scripting support disabled</a> on <var>xhr</var>'s
+  <p>Otherwise, let <var>document</var> be a <a>document</a> that represents the result of running
+  the <a>XML parser</a> with <a>XML scripting support disabled</a> on <var>xhr</var>'s
   <a>received bytes</a>. If that fails (unsupported character encoding,
   namespace well-formedness error, etc.), then return null. [[!HTML]]
 
@@ -1329,7 +1330,7 @@ not be web compatible.
 
  <li><p>Set <var>document</var>'s <a for=Document>encoding</a> to <var>charset</var>.
 
- <li><p>Set <var>document</var>'s <a for=Document>content type</a> to <var>finalMIME</var>.
+ <li><p>Set <var>document</var>'s <a>content type</a> to <var>finalMIME</var>.
 
  <li><p>Set <var>document</var>'s <a for=Document>URL</a> to <var>xhr</var>'s
  <a for=XMLHttpRequest>response</a>'s <a for=response>URL</a>.
@@ -1572,32 +1573,32 @@ steps are:
    <td>The {{XMLHttpRequest/readyState}} attribute changes
    value, except when it changes to <a const for=XMLHttpRequest>UNSENT</a>.
   <tr>
-   <td><dfn id=event-xhr-loadstart event for=XMLHttpRequestEventTarget><code>loadstart</code></dfn>
+   <td><dfn id=event-xhr-loadstart event for=XMLHttpRequest><code>loadstart</code></dfn>
    <td>{{ProgressEvent}}
    <td>The fetch initiates.
   <tr>
-   <td><dfn id=event-xhr-progress event for=XMLHttpRequestEventTarget><code>progress</code></dfn>
+   <td><dfn id=event-xhr-progress event for=XMLHttpRequest><code>progress</code></dfn>
    <td>{{ProgressEvent}}
    <td>Transmitting data.
   <tr>
-   <td><dfn id=event-xhr-abort event for=XMLHttpRequestEventTarget><code>abort</code></dfn>
+   <td><dfn id=event-xhr-abort event for=XMLHttpRequest><code>abort</code></dfn>
    <td>{{ProgressEvent}}
    <td>When the fetch has been aborted. For instance, by invoking the
    {{XMLHttpRequest/abort()}} method.
   <tr>
-   <td><dfn id=event-xhr-error event for=XMLHttpRequestEventTarget><code>error</code></dfn>
+   <td><dfn id=event-xhr-error event for=XMLHttpRequest><code>error</code></dfn>
    <td>{{ProgressEvent}}
    <td>The fetch failed.
   <tr>
-   <td><dfn id=event-xhr-load event for=XMLHttpRequestEventTarget><code>load</code></dfn>
+   <td><dfn id=event-xhr-load event for=XMLHttpRequest><code>load</code></dfn>
    <td>{{ProgressEvent}}
    <td>The fetch succeeded.
   <tr>
-   <td><dfn id=event-xhr-timeout event for=XMLHttpRequestEventTarget><code>timeout</code></dfn>
+   <td><dfn id=event-xhr-timeout event for=XMLHttpRequest><code>timeout</code></dfn>
    <td>{{ProgressEvent}}
    <td>The author specified timeout has passed before the fetch completed.
   <tr>
-   <td><dfn id=event-xhr-loadend event for=XMLHttpRequestEventTarget><code>loadend</code></dfn>
+   <td><dfn id=event-xhr-loadend event for=XMLHttpRequest><code>loadend</code></dfn>
    <td>{{ProgressEvent}}
    <td>The fetch completed (success or failure).
 </table>
@@ -1610,7 +1611,7 @@ typedef (File or USVString) FormDataEntryValue;
 
 [Exposed=(Window,Worker)]
 interface FormData {
-  constructor(optional HTMLFormElement form, optional HTMLElement? submitter = null);
+  constructor(optional HTMLFormElement form);
 
   undefined append(USVString name, USVString value);
   undefined append(USVString name, Blob blobValue, optional USVString filename);
@@ -1636,7 +1637,7 @@ interface FormData {
 moved to the HTML Standard. [[HTML]]
 
 <p>The
-<dfn id=dom-formdata constructor for=FormData lt="FormData(form)"><code>new FormData(<var>form</var>, <var>submitter</var>)</code></dfn>
+<dfn id=dom-formdata constructor for=FormData lt="FormData(form)"><code>new FormData(<var>form</var>)</code></dfn>
 constructor steps are:
 
 <ol>
@@ -1644,19 +1645,8 @@ constructor steps are:
   <p>If <var>form</var> is given, then:
 
   <ol>
-   <li>
-    <p>If <var>submitter</var> is non-null, then:
-
-    <ol>
-     <li><p>If <var>submitter</var> is not a <a>submit button</a>, then <a>throw</a> a
-     {{TypeError}}.
-
-     <li><p>If <var>submitter</var>'s <a>form owner</a> is not <var>form</var>, then <a>throw</a> a
-     "{{NotFoundError!!exception}}" {{DOMException}}.
-    </ol>
-
    <li><p>Let <var>list</var> be the result of <a>constructing the entry list</a> for
-   <var>form</var> and <var>submitter</var>.
+   <var>form</var>.
 
    <li><p>If <var>list</var> is null, then <a>throw</a> an "{{InvalidStateError!!exception}}"
    {{DOMException}}.
@@ -2021,5 +2011,7 @@ the HTML Standard (then Web Applications 1.0). [[!HTML]]
 {{ProgressEvent}} class as part of the
 <a href=https://www.w3.org/TR/2008/REC-SVGTiny12-20081222/svgudom.html>SVG Micro DOM</a>.
 
-<p>This standard is written by <a href=https://annevankesteren.nl/ lang=nl>Anne van Kesteren</a>
-(<a href=https://www.apple.com/>Apple</a>, <a href=mailto:annevk@annevk.nl>annevk@annevk.nl</a>).
+<p>This standard is written by
+<a href=https://annevankesteren.nl/ lang=nl>Anne van Kesteren</a>
+(<a href=https://www.mozilla.org/>Mozilla</a>,
+<a href=mailto:annevk@annevk.nl>annevk@annevk.nl</a>).

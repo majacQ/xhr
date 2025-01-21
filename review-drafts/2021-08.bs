@@ -1,18 +1,18 @@
 <pre class=metadata>
 Group: WHATWG
+Date: 2021-08-16
 H1: XMLHttpRequest
 Shortname: xhr
 Text Macro: TWITTER xhrstandard
-Text Macro: LATESTRD 2024-02
+Text Macro: LATESTRD 2021-08
 Abstract: The XMLHttpRequest Standard defines an API that provides scripted client functionality for transferring data between a client and a server.
 Translation: ja https://triple-underscore.github.io/XHR-ja.html
 Translate IDs: enumdef-xmlhttprequestresponsetype xmlhttprequestresponsetype,dictdef-progresseventinit progresseventinit,typedefdef-formdataentryvalue formdataentryvalue
 </pre>
 
-<!-- Temporary: https://github.com/w3c/webdriver-bidi/issues/358 -->
-<pre class=link-defaults>
-spec:webdriver-bidi; type:dfn; text:event
-spec:fetch; type:dfn; for:/; text:credentials
+<pre class=anchors>
+urlPrefix: https://w3c.github.io/DOM-Parsing/; spec: dom-parsing
+    type: dfn; text: fragment serializing algorithm; url: dfn-fragment-serializing-algorithm
 </pre>
 
 
@@ -241,12 +241,6 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget {
  <dt><dfn>response object</dfn>
  <dd>An object, failure, or null, initially null.
 
- <dt><dfn for=XMLHttpRequest>fetch controller</dfn>
- <dd>A <a for=/>fetch controller</a>, initially a new <a for=/>fetch controller</a>.
- <span class=note>The <a><code>send()</code></a> method sets it to a useful
- <a for=/>fetch controller</a>, but for simplicity it always holds a
- <a for=/>fetch controller</a>.</span>
-
  <dt><dfn id=override-mime-type>override MIME type</dfn>
  <dd>A <a for=/>MIME type</a> or null, initially null. <span class=note>Can get a value when
  {{overrideMimeType()}} is invoked.</span>
@@ -279,18 +273,18 @@ constructor steps are:
 <i>headers received</i>, or <i>loading</i>, and it has one or more
 <a>event listeners</a>
 registered whose <b>type</b> is one of
-{{XMLHttpRequest/readystatechange}},
-{{XMLHttpRequestEventTarget/progress}},
-{{XMLHttpRequestEventTarget/abort}},
-{{XMLHttpRequestEventTarget/error}},
-{{XMLHttpRequestEventTarget/load}},
-{{XMLHttpRequestEventTarget/timeout!!event}}, and
-{{XMLHttpRequestEventTarget/loadend}}.
+<a event><code>readystatechange</code></a>,
+<a event><code>progress</code></a>,
+<a event><code>abort</code></a>,
+<a event><code>error</code></a>,
+<a event><code>load</code></a>,
+<a event><code>timeout</code></a>, and
+<a event><code>loadend</code></a>.
 <!-- No need to mention upload event listeners as they happen during /opened/. -->
 
-<p>If an {{XMLHttpRequest}} object is garbage collected while its connection is still open, the user
-agent must <a for="fetch controller">terminate</a> the {{XMLHttpRequest}} object's
-<a for=XMLHttpRequest>fetch controller</a>.
+<p>If an {{XMLHttpRequest}} object is garbage collected while its
+connection is still open, the user agent must <a for=fetch lt=terminated>terminate</a> the ongoing
+fetch operated by the {{XMLHttpRequest}} object.
 
 
 <h3 id=event-handlers>Event handlers</h3>
@@ -309,25 +303,25 @@ from {{XMLHttpRequestEventTarget}} as attributes:
  <tbody>
   <tr>
    <td><dfn id=handler-xhr-onloadstart attribute for=XMLHttpRequestEventTarget><code>onloadstart</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/loadstart}}
+   <td><a event><code>loadstart</code></a>
   <tr>
    <td><dfn id=handler-xhr-onprogress attribute for=XMLHttpRequestEventTarget><code>onprogress</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/progress}}
+   <td><a event><code>progress</code></a>
   <tr>
    <td><dfn id=handler-xhr-onabort attribute for=XMLHttpRequestEventTarget><code>onabort</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/abort}}
+   <td><a event><code>abort</code></a>
   <tr>
    <td><dfn id=handler-xhr-onerror attribute for=XMLHttpRequestEventTarget><code>onerror</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/error}}
+   <td><a event><code>error</code></a>
   <tr>
    <td><dfn id=handler-xhr-onload attribute for=XMLHttpRequestEventTarget><code>onload</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/load}}
+   <td><a event><code>load</code></a>
   <tr>
    <td><dfn id=handler-xhr-ontimeout attribute for=XMLHttpRequestEventTarget><code>ontimeout</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/timeout!!event}}
+   <td><a event><code>timeout</code></a>
   <tr>
    <td><dfn id=handler-xhr-onloadend attribute for=XMLHttpRequestEventTarget><code>onloadend</code></dfn>
-   <td>{{XMLHttpRequestEventTarget/loadend}}
+   <td><a event><code>loadend</code></a>
 </table>
 
 <p>The following is the
@@ -391,10 +385,10 @@ cell in the first column is <a>this</a>'s <a>state</a>:
 
 <h3 id=request>Request</h3>
 
-<p class=note id=event-listeners-and-preflight>Registering one or more event listeners on an
-{{XMLHttpRequestUpload}} object will result in a <a>CORS-preflight request</a>. (That is because
-registering an event listener causes the <a>upload listener flag</a> to be set, which in turn causes
-the <a>use-CORS-preflight flag</a> to be set.)
+<p class="note no-backref" id=event-listeners-and-preflight>Registering one or more event listeners
+on an {{XMLHttpRequestUpload}} object will result in a <a>CORS-preflight request</a>. (That is
+because registering an event listener causes the <a>upload listener flag</a> to be set, which in
+turn causes the <a>use-CORS-preflight flag</a> to be set.)
 
 
 <h4 id=the-open()-method>The <code>open()</code> method</h4>
@@ -413,16 +407,15 @@ the <a>use-CORS-preflight flag</a> to be set.)
   case-insensitive match for `<code>CONNECT</code>`, `<code>TRACE</code>`, or `<code>TRACK</code>`.
 
   <p>Throws an "{{InvalidAccessError!!exception}}" {{DOMException}} if <var>async</var> is false,
-  the <a>current global object</a> is a {{Window}} object, and the
-  {{XMLHttpRequest/timeout!!attribute}} attribute is not zero or the {{XMLHttpRequest/responseType}}
-  attribute is not the empty string.
+  <a>current global object</a> is a {{Window}} object, and the {{XMLHttpRequest/timeout!!attribute}}
+  attribute is not zero or the {{XMLHttpRequest/responseType}} attribute is not the empty string.
 </dl>
 
-<p class=critical id=sync-warning>Synchronous {{XMLHttpRequest}} outside of workers is in the
-process of being removed from the web platform as it has detrimental effects to the end user's
-experience. (This is a long process that takes many years.) Developers must not pass false for the
-<var>async</var> argument when the <a>current global object</a> is a {{Window}} object. User agents
-are strongly encouraged to warn about such usage in developer tools and may experiment with
+<p class="critical no-backref" id=sync-warning>Synchronous {{XMLHttpRequest}} outside of workers is
+in the process of being removed from the web platform as it has detrimental effects to the end
+user's experience. (This is a long process that takes many years.) Developers must not pass false
+for the <var>async</var> argument when <a>current global object</a> is a {{Window}} object. User
+agents are strongly encouraged to warn about such usage in developer tools and may experiment with
 <a lt=throw>throwing</a> an "{{InvalidAccessError!!exception}}" {{DOMException}} when it occurs.
 
 <p>The
@@ -432,9 +425,10 @@ and
 method steps are:
 
 <ol>
- <li><p>If <a>this</a>'s <a>relevant global object</a> is a {{Window}} object and its
- <a>associated <code>Document</code></a> is not <a>fully active</a>, then <a>throw</a> an
- "{{InvalidStateError!!exception}}" {{DOMException}}.
+ <li><p>Let <var>settingsObject</var> be <a>this</a>'s <a>relevant settings object</a>.
+
+ <li><p>If <var>settingsObject</var> has a <a>responsible document</a> and it is <em>not</em>
+ <a>fully active</a>, then <a>throw</a> an "{{InvalidStateError!!exception}}" {{DOMException}}.
 
  <li><p>If <var>method</var> is not a <a for=/>method</a>, then <a>throw</a> a
  "{{SyntaxError!!exception}}" {{DOMException}}.
@@ -444,9 +438,9 @@ method steps are:
 
  <li><p><a for=method>Normalize</a> <var>method</var>.
 
- <li><p>Let <var>parsedURL</var> be the result of
- <a lt="encoding-parse a URL">encoding-parsing a URL</a> <var>url</var>, relative to <a>this</a>'s
- <a>relevant settings object</a>.
+ <li><p>Let <var>parsedURL</var> be the result of <a lt="URL parser">parsing</a> <var>url</var> with
+ <var>settingsObject</var>'s <a for="environment settings object">API base URL</a> and
+ <var>settingsObject</var>'s <a for="environment settings object">API URL character encoding</a>.
 
  <li><p>If <var>parsedURL</var> is failure, then <a>throw</a> a "{{SyntaxError!!exception}}"
  {{DOMException}}.
@@ -476,10 +470,11 @@ method steps are:
  the empty string, then <a>throw</a> an "{{InvalidAccessError!!exception}}" {{DOMException}}.
 
  <li>
-  <p><a for="fetch controller">Terminate</a> <a>this</a>'s
-  <a for=XMLHttpRequest>fetch controller</a>.
+  <p><a for=fetch lt=terminated>Terminate</a> the ongoing fetch operated by the
+  {{XMLHttpRequest}} object.
 
-  <p class=note>A <a for=/>fetch</a> can be ongoing at this point.
+  <p class=note>A <a for=/>fetch</a> can be
+  ongoing at this point.
 
  <li>
   <p>Set variables associated with the object as follows:
@@ -521,7 +516,7 @@ the editing software used to write the XMLHttpRequest Standard.
  <dt><code><var>client</var> . <a method for=XMLHttpRequest>setRequestHeader(<var>name</var>, <var>value</var>)</a></code>
 
  <dd>
-  <p>Appends a value to an existing request header or adds a new request header.
+  <p>Combines a <a>header</a> in <a>author request headers</a>.
 
   <p>Throws an "{{InvalidStateError!!exception}}" {{DOMException}} if either <a>state</a> is not
   <i>opened</i> or the <a><code>send()</code> flag</a> is set.
@@ -541,17 +536,18 @@ method must run these steps:
  <li><p>If <a>this</a>'s <a><code>send()</code> flag</a> is set, then <a>throw</a> an
  "{{InvalidStateError!!exception}}" {{DOMException}}.
 
- <li><p><a for="header value">Normalize</a> <var>value</var>.
+ <li><p><a for=header/value>Normalize</a> <var>value</var>.
 
  <li>
-  <p>If <var>name</var> is not a <a>header name</a> or <var>value</var> is not a
-  <a>header value</a>, then <a>throw</a> a "{{SyntaxError!!exception}}" {{DOMException}}.
+  <p>If <var>name</var> is not a <a for=header>name</a> or <var>value</var> is not a
+  <a for=header>value</a>, then <a>throw</a> a "{{SyntaxError!!exception}}" {{DOMException}}.
 
-  <p class=note>An empty byte sequence represents an empty <a>header value</a>.
+  <p class="note no-backref">An empty byte sequence represents an empty <a>header</a>
+  <a for=header>value</a>.
 
- <li><p>If (<var>name</var>, <var>value</var>) is a <a>forbidden request-header</a>, then return.
+ <li><p>If <var>name</var> is a <a>forbidden header name</a>, then return.
 
- <li><p><a for="header list">Combine</a> (<var>name</var>, <var>value</var>) in <a>this</a>'s
+ <li><p><a for="header list">Combine</a> <var>name</var>/<var>value</var> in <a>this</a>'s
  <a>author request headers</a>.
 </ol>
 
@@ -585,7 +581,7 @@ client.send();
   <a><code>send()</code></a> method).
 
   <p>When set: throws an "{{InvalidAccessError!!exception}}" {{DOMException}} if the
-  <a>synchronous flag</a> is set and the <a>current global object</a> is a {{Window}} object.
+  <a>synchronous flag</a> is set and <a>current global object</a> is a {{Window}} object.
 </dl>
 
 <p>The <dfn attribute for=XMLHttpRequest><code>timeout</code></dfn> getter steps are to return
@@ -681,23 +677,11 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
    <li><p>Let <var>extractedContentType</var> be null.
 
    <li><p>If <var>body</var> is a {{Document}}, then set <a>this</a>'s <a>request body</a> to
-   <var>body</var>, <a lt="fragment serializing algorithm steps">serialized</a>,
+   <var>body</var>, <a lt="fragment serializing algorithm">serialized</a>,
    <a for=string>converted</a>, and <a lt="UTF-8 encode">UTF-8 encoded</a>.
 
-   <li>
-    <p>Otherwise:
-
-    <ol>
-     <li><p>Let <var>bodyWithType</var> be the result of
-     <a for=BodyInit lt="safely extract">safely extracting</a> <var>body</var>.
-
-     <li><p>Set <a>this</a>'s <a>request body</a> to <var>bodyWithType</var>'s
-     <a for="body with type">body</a>.
-
-     <li><p>Set <var>extractedContentType</var> to <var>bodyWithType</var>'s
-     <a for="body with type">type</a>.
-    </ol>
-   </li>
+   <li><p>Otherwise, set <a>this</a>'s <a>request body</a> and <var>extractedContentType</var> to
+   the result of <a for=BodyInit lt="safely extract">safely extracting</a> <var>body</var>.
 
    <li><p>Let <var>originalAuthorContentType</var> be the result of <a for="header list">getting</a>
    `<code>Content-Type</code>` from <a>this</a>'s <a>author request headers</a>.
@@ -726,8 +710,9 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
          <li><p>Let <var>newContentTypeSerialized</var> be the result of
          <a lt="serialize a MIME type to bytes">serializing</a> <var>contentTypeRecord</var>.
 
-         <li><p><a for="header list">Set</a> (`<code>Content-Type</code>`,
-         <var>newContentTypeSerialized</var>) in <a>this</a>'s <a>author request headers</a>.
+         <li><p><a for="header list">Set</a>
+         `<code>Content-Type</code>`/<var>newContentTypeSerialized</var> in <a>this</a>'s
+         <a>author request headers</a>.
         </ol>
       </ol>
     </ol>
@@ -736,16 +721,16 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
     <p>Otherwise:
 
     <ol>
-     <li><p>If <var>body</var> is an <a>HTML document</a>, then <a for="header list">set</a>
-     (`<code>Content-Type</code>`, `<code>text/html;charset=UTF-8</code>`) in <a>this</a>'s
+     <li><p>If <var>body</var> is an <a>HTML document</a>, <a for="header list">set</a>
+     `<code>Content-Type</code>`/`<code>text/html;charset=UTF-8</code>` in <a>this</a>'s
      <a>author request headers</a>.
 
      <li><p>Otherwise, if <var>body</var> is an <a>XML document</a>, <a for="header list">set</a>
-     (`<code>Content-Type</code>`, `<code>application/xml;charset=UTF-8</code>`) in <a>this</a>'s
+     `<code>Content-Type</code>`/`<code>application/xml;charset=UTF-8</code>` in <a>this</a>'s
      <a>author request headers</a>.
 
      <li><p>Otherwise, if <var>extractedContentType</var> is not null, <a for="header list">set</a>
-     (`<code>Content-Type</code>`, <var>extractedContentType</var>) in <a>this</a>'s
+     `<code>Content-Type</code>`/<var>extractedContentType</var> in <a>this</a>'s
      <a>author request headers</a>.
     </ol>
   </ol>
@@ -780,8 +765,6 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
    otherwise "<code>same-origin</code>".
    <dt><a for=request>use-URL-credentials flag</a>
    <dd>Set if <a>this</a>'s <a>request URL</a> <a>includes credentials</a>.
-   <dt><a for=request>initiator type</a>
-   <dd>"<code>xmlhttprequest</code>".
   </dl>
 
  <li><p>Unset <a>this</a>'s <a>upload complete flag</a>.
@@ -816,7 +799,7 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
    <a><code>send()</code> flag</a> is unset, then return.
 
    <li>
-    <p>Let <var>processRequestBodyChunkLength</var>, given a <var>bytesLength</var>, be these steps:
+    <p>Let <var>processRequestBody</var>, given a <var>bytesLength</var>, be these steps:
 
     <ol>
      <li><p>Increase <var>requestBodyTransmitted</var> by <var>bytesLength</var>.
@@ -914,10 +897,8 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
      <var>processBodyError</var>, and <a>this</a>'s <a>relevant global object</a>.
     </ol>
 
-   <li><p>Set <a>this</a>'s <a for=XMLHttpRequest>fetch controller</a> to the result of
-   <a for=/ lt=fetch>fetching</a> <var>req</var> with
-   <a for=fetch><i>processRequestBodyChunkLength</i></a> set to
-   <var>processRequestBodyChunkLength</var>, <a for=fetch><i>processRequestEndOfBody</i></a> set to
+   <li><p><a for=/>Fetch</a> <var>req</var> with <a for=fetch><i>processRequestBody</i></a> set to
+   <var>processRequestBody</var>, <a for=fetch><i>processRequestEndOfBody</i></a> set to
    <var>processRequestEndOfBody</var>, and <a for=fetch><i>processResponse</i></a> set to
    <var>processResponse</var>.
 
@@ -933,8 +914,7 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
      <var>now</var>.
 
      <li><p>If <var>req</var>'s <a for=request>done flag</a> is unset, then set <a>this</a>'s
-     <a>timed out flag</a> and <a for="fetch controller">terminate</a> <a>this</a>'s
-     <a for=XMLHttpRequest>fetch controller</a>.
+     <a>timed out flag</a> and <a for=fetch>terminate</a> <a for=/>fetching</a>.
     </ol>
   </ol>
 
@@ -945,7 +925,7 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
    <li><p>Let <var>processedResponse</var> be false.
 
    <li>
-    <p>Let <var>processResponseConsumeBody</var>, given a <var>response</var> and
+    <p>Let <var>processResponseEndOfBody</var>, given a <var>response</var> and
     <var>nullOrFailureOrBytes</var>, be these steps:
 
     <ol>
@@ -958,10 +938,9 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
      <li><p>Set <var>processedResponse</var> to true.
     </ol>
 
-   <li><p>Set <a>this</a>'s <a for=XMLHttpRequest>fetch controller</a> to the result of
-   <a for=/ lt=fetch>fetching</a> <var>req</var> with
-   <a for=fetch><i>processResponseConsumeBody</i></a> set to <var>processResponseConsumeBody</var>
-   and <a for=fetch><i>useParallelQueue</i></a> set to true.
+   <li><p><a for=/>Fetch</a> <var>req</var> with <a for=fetch><i>processResponseEndOfBody</i></a>
+   set to <var>processResponseEndOfBody</var> and <a for=fetch><i>useParallelQueue</i></a> set to
+   true.
 
    <li><p>Let <var>now</var> be the present time.
    <!-- Eventually this should use some kind of time standard. -->
@@ -971,10 +950,7 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
    <var>now</var>.
 
    <li><p>If <var>processedResponse</var> is false, then set <a>this</a>'s <a>timed out flag</a> and
-   <a for="fetch controller">terminate</a> <a>this</a>'s <a for=XMLHttpRequest>fetch controller</a>.
-
-   <li><p><a for="fetch controller">Report timing</a> for <a>this</a>'s
-   <a for=XMLHttpRequest>fetch controller</a> given the <a>current global object</a>.
+   <a for=fetch>terminate</a> <a for=/>fetching</a>.
 
    <li><p>Run <a>handle response end-of-body</a> for <a>this</a>.
   </ol>
@@ -1025,12 +1001,11 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
 
  <li><p>Otherwise, if <var>xhr</var>'s <a for=XMLHttpRequest>response</a>'s
  <a for=response>aborted flag</a> is set, run the <a>request error steps</a> for <var>xhr</var>,
- <a event for=XMLHttpRequestEventTarget><code>abort</code></a>, and "{{AbortError!!exception}}"
- {{DOMException}}.
+ <a event><code>abort</code></a>, and "{{AbortError!!exception}}" {{DOMException}}.
 
- <li><p>Otherwise, if <var>xhr</var>'s <a for=XMLHttpRequest>response</a> is a
- <a for=/>network error</a>, then run the <a>request error steps</a> for <var>xhr</var>,
- {{XMLHttpRequestEventTarget/error}}, and "{{NetworkError!!exception}}" {{DOMException}}.
+ <li><p>Otherwise, if <var>xhr</var>'s <a for=XMLHttpRequest>response</a>'s is a
+ <a for=/>network error</a>, run the <a>request error steps</a> for <var>xhr</var>,
+ <a event><code>error</code></a>, and "{{NetworkError!!exception}}" {{DOMException}}.
 </ol>
 
 <p>The <dfn>request error steps</dfn> for an {{XMLHttpRequest}} object <var>xhr</var>,
@@ -1085,13 +1060,11 @@ return <a>this</a>'s <a>cross-origin credentials</a>.
 <p>The <dfn method for=XMLHttpRequest><code>abort()</code></dfn> method steps are:
 
 <ol>
- <li><p><a for="fetch controller">Abort</a> <a>this</a>'s
- <a for=XMLHttpRequest>fetch controller</a>.
+ <li><p><a for=fetch lt=terminated>Terminate</a> the ongoing fetch with the <i>aborted</i> flag set.
 
  <li><p>If <a>this</a>'s <a>state</a> is <i>opened</i> with <a>this</a>'s
  <a><code>send()</code> flag</a> set, <i>headers received</i>, or <i>loading</i>, then run the
- <a>request error steps</a> for <a>this</a> and
- <a event for=XMLHttpRequestEventTarget><code>abort</code></a>.
+ <a>request error steps</a> for <a>this</a> and <a event><code>abort</code></a>.
 
  <li>
   <p>If <a>this</a>'s <a>state</a> is <i>done</i>, then set <a>this</a>'s <a>state</a> to
@@ -1129,8 +1102,8 @@ set.
 steps are to return the result of <a for="header list">getting</a> <var>name</var> from
 <a>this</a>'s <a for=XMLHttpRequest>response</a>'s <a for=response>header list</a>.
 
-<p class=note>The Fetch Standard filters <a>this</a>'s <a for=XMLHttpRequest>response</a>'s
-<a for=response>header list</a>. [[!FETCH]]
+<p class="note no-backref">The Fetch Standard filters <a>this</a>'s
+<a for=XMLHttpRequest>response</a>'s <a for=response>header list</a>. [[!FETCH]]
 
 <div id=example-getresponseheader class=example>
  <p>For the following script:
@@ -1188,8 +1161,8 @@ text/plain; charset=UTF-8</code></pre>
  <li><p>Return <var>output</var>.
 </ol>
 
-<p class=note>The Fetch Standard filters <a>this</a>'s <a for=XMLHttpRequest>response</a>'s
-<a for=response>header list</a>. [[!FETCH]]
+<p class="note no-backref">The Fetch Standard filters <a>this</a>'s
+<a for=XMLHttpRequest>response</a>'s <a for=response>header list</a>. [[!FETCH]]
 
 <div id=example-getresponseheaders class=example>
  <p>For the following script:
@@ -1305,7 +1278,7 @@ not be web compatible.
    <li><p>If <var>charset</var> is null, then set <var>charset</var> to <a>UTF-8</a>.
 
    <li><p>Let <var>document</var> be a
-   <a for=/>document</a> that
+   <a>document</a> that
    represents the result parsing <var>xhr</var>'s <a>received bytes</a> following the rules set
    forth in the HTML Standard for an HTML parser with scripting disabled and
    <a>a known definite encoding</a> <var>charset</var>.
@@ -1316,8 +1289,8 @@ not be web compatible.
   </ol>
 
  <li>
-  <p>Otherwise, let <var>document</var> be a <a for=/>document</a> that represents the result of
-  running the <a>XML parser</a> with <a>XML scripting support disabled</a> on <var>xhr</var>'s
+  <p>Otherwise, let <var>document</var> be a <a>document</a> that represents the result of running
+  the <a>XML parser</a> with <a>XML scripting support disabled</a> on <var>xhr</var>'s
   <a>received bytes</a>. If that fails (unsupported character encoding,
   namespace well-formedness error, etc.), then return null. [[!HTML]]
 
@@ -1329,7 +1302,7 @@ not be web compatible.
 
  <li><p>Set <var>document</var>'s <a for=Document>encoding</a> to <var>charset</var>.
 
- <li><p>Set <var>document</var>'s <a for=Document>content type</a> to <var>finalMIME</var>.
+ <li><p>Set <var>document</var>'s <a>content type</a> to <var>finalMIME</var>.
 
  <li><p>Set <var>document</var>'s <a for=Document>URL</a> to <var>xhr</var>'s
  <a for=XMLHttpRequest>response</a>'s <a for=response>URL</a>.
@@ -1400,7 +1373,6 @@ steps are:
  <dt><code><var>client</var> . <a attribute for=XMLHttpRequest>responseType</a> [ = <var>value</var> ]</code>
  <dd>
   <p>Returns the response type.
-
   <p>Can be set to change the response type. Values are:
   the empty string (default),
   "<code>arraybuffer</code>",
@@ -1408,15 +1380,15 @@ steps are:
   "<code>document</code>",
   "<code>json</code>", and
   "<code>text</code>".
-
-  <p>When set: setting to "<code>document</code>" is ignored if the <a>current global object</a> is
-  not a {{Window}} object.
+  <p>When set: setting to "<code>document</code>" is ignored if
+  <a>current global object</a> is <em>not</em> a
+  {{Window}} object.
 
   <p>When set: throws an "{{InvalidStateError!!exception}}" {{DOMException}} if <a>state</a> is
   <i>loading</i> or <i>done</i>.
 
   <p>When set: throws an "{{InvalidAccessError!!exception}}" {{DOMException}} if the
-  <a>synchronous flag</a> is set and the <a>current global object</a> is a {{Window}} object.
+  <a>synchronous flag</a> is set and <a>current global object</a> is a {{Window}} object.
 </dl>
 
 <p>The <dfn attribute for=XMLHttpRequest><code>responseType</code></dfn> getter steps are to return
@@ -1572,32 +1544,32 @@ steps are:
    <td>The {{XMLHttpRequest/readyState}} attribute changes
    value, except when it changes to <a const for=XMLHttpRequest>UNSENT</a>.
   <tr>
-   <td><dfn id=event-xhr-loadstart event for=XMLHttpRequestEventTarget><code>loadstart</code></dfn>
+   <td><dfn id=event-xhr-loadstart event for=XMLHttpRequest><code>loadstart</code></dfn>
    <td>{{ProgressEvent}}
    <td>The fetch initiates.
   <tr>
-   <td><dfn id=event-xhr-progress event for=XMLHttpRequestEventTarget><code>progress</code></dfn>
+   <td><dfn id=event-xhr-progress event for=XMLHttpRequest><code>progress</code></dfn>
    <td>{{ProgressEvent}}
    <td>Transmitting data.
   <tr>
-   <td><dfn id=event-xhr-abort event for=XMLHttpRequestEventTarget><code>abort</code></dfn>
+   <td><dfn id=event-xhr-abort event for=XMLHttpRequest><code>abort</code></dfn>
    <td>{{ProgressEvent}}
    <td>When the fetch has been aborted. For instance, by invoking the
    {{XMLHttpRequest/abort()}} method.
   <tr>
-   <td><dfn id=event-xhr-error event for=XMLHttpRequestEventTarget><code>error</code></dfn>
+   <td><dfn id=event-xhr-error event for=XMLHttpRequest><code>error</code></dfn>
    <td>{{ProgressEvent}}
    <td>The fetch failed.
   <tr>
-   <td><dfn id=event-xhr-load event for=XMLHttpRequestEventTarget><code>load</code></dfn>
+   <td><dfn id=event-xhr-load event for=XMLHttpRequest><code>load</code></dfn>
    <td>{{ProgressEvent}}
    <td>The fetch succeeded.
   <tr>
-   <td><dfn id=event-xhr-timeout event for=XMLHttpRequestEventTarget><code>timeout</code></dfn>
+   <td><dfn id=event-xhr-timeout event for=XMLHttpRequest><code>timeout</code></dfn>
    <td>{{ProgressEvent}}
    <td>The author specified timeout has passed before the fetch completed.
   <tr>
-   <td><dfn id=event-xhr-loadend event for=XMLHttpRequestEventTarget><code>loadend</code></dfn>
+   <td><dfn id=event-xhr-loadend event for=XMLHttpRequest><code>loadend</code></dfn>
    <td>{{ProgressEvent}}
    <td>The fetch completed (success or failure).
 </table>
@@ -1610,7 +1582,7 @@ typedef (File or USVString) FormDataEntryValue;
 
 [Exposed=(Window,Worker)]
 interface FormData {
-  constructor(optional HTMLFormElement form, optional HTMLElement? submitter = null);
+  constructor(optional HTMLFormElement form);
 
   undefined append(USVString name, USVString value);
   undefined append(USVString name, Blob blobValue, optional USVString filename);
@@ -1625,18 +1597,44 @@ interface FormData {
 </pre>
 
 <p>Each {{FormData}} object has an associated
-<dfn id=concept-formdata-entry-list export for=FormData>entry list</dfn> (an
-<a for=/>entry list</a>). It is initially empty.
+<dfn id=concept-formdata-entry-list export for=FormData>entry list</dfn> (a <a for=/>list</a> of
+<a>entries</a>). It is initially the empty list.
 
-<p class="note">This section used to define
-<a id="concept-formdata-entry" for="entry list">entry</a>, an entry's
-<a id="concept-formdata-entry-name" for="entry list/entry">name</a> and
-<a id="concept-formdata-entry-value" for="entry list/entry">value</a>, and the
-<a id="create-an-entry" for="entry list">create an entry</a> algorithm. These definitions have been
-moved to the HTML Standard. [[HTML]]
+<p>An <dfn id=concept-formdata-entry export for=FormData lt=entry|entries>entry</dfn> consists of a
+<dfn id=concept-formdata-entry-name export for=FormData/entry>name</dfn> and a
+<dfn id=concept-formdata-entry-value export for=FormData/entry>value</dfn>.
+
+<p>For the purposes of interaction with other algorithms, an <a for=FormData>entry</a>'s filename is
+the empty string if <a for=FormData/entry>value</a> is not a {{File}} object, and otherwise its
+filename is the value of <a for=FormData>entry</a>'s <a for=FormData/entry>value</a>'s {{File/name}}
+attribute.
+
+<p>To <dfn>create an entry</dfn> for <var>name</var>, <var>value</var>, and optionally a
+<var>filename</var>, run these steps:
+
+<ol>
+ <li><p>Let <var>entry</var> be a new <a for=FormData>entry</a>.
+
+ <li><p>Set <var>entry</var>'s <a for=FormData/entry>name</a> to <var>name</var>.
+
+ <li><p>If <var>value</var> is a {{Blob}} object and not a {{File}} object, then set
+ <var>value</var> to a new {{File}} object, representing the same bytes, whose {{File/name}}
+ attribute value is "<code>blob</code>".
+ <!-- XXX at some point File API should get internal slots for this -->
+
+ <li><p>If <var>value</var> is (now) a {{File}} object and <var>filename</var> is given, then set
+ <var>value</var> to a new {{File}} object, representing the same bytes, whose {{File/name}}
+ attribute value is <var>filename</var>.
+
+ <li><p>Set <var>entry</var>'s <a for=FormData/entry>value</a> to <var>value</var>.
+
+ <li><p>Return <var>entry</var>.
+</ol>
+
+<hr>
 
 <p>The
-<dfn id=dom-formdata constructor for=FormData lt="FormData(form)"><code>new FormData(<var>form</var>, <var>submitter</var>)</code></dfn>
+<dfn id=dom-formdata constructor for=FormData lt="FormData(form)"><code>new FormData(<var>form</var>)</code></dfn>
 constructor steps are:
 
 <ol>
@@ -1644,19 +1642,8 @@ constructor steps are:
   <p>If <var>form</var> is given, then:
 
   <ol>
-   <li>
-    <p>If <var>submitter</var> is non-null, then:
-
-    <ol>
-     <li><p>If <var>submitter</var> is not a <a>submit button</a>, then <a>throw</a> a
-     {{TypeError}}.
-
-     <li><p>If <var>submitter</var>'s <a>form owner</a> is not <var>form</var>, then <a>throw</a> a
-     "{{NotFoundError!!exception}}" {{DOMException}}.
-    </ol>
-
    <li><p>Let <var>list</var> be the result of <a>constructing the entry list</a> for
-   <var>form</var> and <var>submitter</var>.
+   <var>form</var>.
 
    <li><p>If <var>list</var> is null, then <a>throw</a> an "{{InvalidStateError!!exception}}"
    {{DOMException}}.
@@ -1674,7 +1661,7 @@ method steps are:
 <ol>
  <li><p>Let <var>value</var> be <var>value</var> if given; otherwise <var>blobValue</var>.
 
- <li><p>Let <var>entry</var> be the result of <a for="entry list">creating an entry</a> with
+ <li><p>Let <var>entry</var> be the result of <a lt="create an entry">creating an entry</a> with
  <var>name</var>, <var>value</var>, and <var>filename</var> if given.
 
  <li><p><a for=list>Append</a> <var>entry</var> to <a>this</a>'s <a for=FormData>entry list</a>.
@@ -1684,19 +1671,18 @@ method steps are:
 is due to a limitation of the editing software used to write the XMLHttpRequest Standard.
 
 <p>The <dfn id=dom-formdata-delete method for=FormData><code>delete(<var>name</var>)</code></dfn>
-method steps are to <a for=list>remove</a> all <a for="entry list">entries</a> whose
-<a for="entry list/entry">name</a> is <var>name</var> from <a>this</a>'s
-<a for=FormData>entry list</a>.
+method steps are to <a for=list>remove</a> all <a for=FormData>entries</a> whose
+<a for=FormData/entry>name</a> is <var>name</var> from <a>this</a>'s <a for=FormData>entry list</a>.
 
 <p>The <dfn id=dom-formdata-get method for=FormData><code>get(<var>name</var>)</code></dfn> method
 steps are:
 
 <ol>
- <li><p>If there is no <a for="entry list">entry</a> whose <a for="entry list/entry">name</a> is
+ <li><p>If there is no <a for=FormData>entry</a> whose <a for=FormData/entry>name</a> is
  <var>name</var> in <a>this</a>'s <a for=FormData>entry list</a>, then return null.
 
- <li><p>Return the <a for="entry list/entry">value</a> of the first <a for="entry list">entry</a>
- whose <a for="entry list/entry">name</a> is <var>name</var> from <a>this</a>'s
+ <li><p>Return the <a for=FormData/entry>value</a> of the first <a for=FormData>entry</a> whose
+ <a for=FormData/entry>name</a> is <var>name</var> from <a>this</a>'s
  <a for=FormData>entry list</a>.
 </ol>
 
@@ -1704,18 +1690,18 @@ steps are:
 method steps are:
 
 <ol>
- <li><p>If there is no <a for="entry list">entry</a> whose <a for="entry list/entry">name</a> is
+ <li><p>If there is no <a for=FormData>entry</a> whose <a for=FormData/entry>name</a> is
  <var>name</var> in <a>this</a>'s <a for=FormData>entry list</a>, then return the empty list.
 
- <li><p>Return the <a for="entry list/entry">values</a> of all <a for="entry list">entries</a> whose
- <a for="entry list/entry">name</a> is <var>name</var>, in order, from <a>this</a>'s
+ <li><p>Return the <a for=FormData/entry>values</a> of all <a for=FormData>entries</a> whose
+ <a for=FormData/entry>name</a> is <var>name</var>, in order, from <a>this</a>'s
  <a for=FormData>entry list</a>.
 </ol>
 
 <p>The <dfn id=dom-formdata-has method for=FormData><code>has(<var>name</var>)</code></dfn> method
-steps are to return true if there is an <a for="entry list">entry</a> whose
-<a for="entry list/entry">name</a> is <var>name</var> in <a>this</a>'s
-<a for=FormData>entry list</a>; otherwise false.
+steps are to return true if there is an <a for=FormData>entry</a> whose
+<a for=FormData/entry>name</a> is <var>name</var> in <a>this</a>'s <a for=FormData>entry list</a>;
+otherwise false.
 
 <p>The
 <dfn id=dom-formdata-set method for=FormData><code>set(<var>name</var>, <var>value</var>)</code></dfn>
@@ -1726,12 +1712,12 @@ method steps are:
 <ol>
  <li><p>Let <var>value</var> be <var>value</var> if given; otherwise <var>blobValue</var>.
 
- <li><p>Let <var>entry</var> be the result of <a for="entry list">creating an entry</a> with
+ <li><p>Let <var>entry</var> be the result of <a lt="create an entry">creating an entry</a> with
  <var>name</var>, <var>value</var>, and <var>filename</var> if given.
 
- <li><p>If there are <a for="entry list">entries</a> in <a>this</a>'s <a for=FormData>entry list</a>
- whose <a for="entry list/entry">name</a> is <var>name</var>, then <a for=list>replace</a> the first
- such <a for="entry list">entry</a> with <var>entry</var> and <a for=list>remove</a> the others.
+ <li><p>If there are <a for=FormData>entries</a> in <a>this</a>'s <a for=FormData>entry list</a>
+ whose <a for=FormData/entry>name</a> is <var>name</var>, then <a for=list>replace</a> the first
+ such <a for=FormData>entry</a> with <var>entry</var> and <a for=list>remove</a> the others.
 
  <li><p>Otherwise, <a for=list>append</a> <var>entry</var> to <a>this</a>'s
  <a for=FormData>entry list</a>.
@@ -1741,8 +1727,8 @@ method steps are:
 is due to a limitation of the editing software used to write the XMLHttpRequest Standard.
 
 <p>The <a>value pairs to iterate over</a> are <a>this</a>'s <a for=FormData>entry list</a>'s
-<a for="entry list">entries</a> with the key being the <a for="entry list/entry">name</a> and the
-value being the <a for="entry list/entry">value</a>.
+<a for=FormData>entries</a> with the key being the <a for=FormData/entry>name</a> and the value
+being the <a for=FormData/entry>value</a>.
 
 
 <h2 id=interface-progressevent>Interface {{ProgressEvent}}</h2>
@@ -1917,7 +1903,6 @@ Cameron McCormack,
 Chris Marrin,
 Christophe Jolif,
 Charles McCathieNevile,
-Chirag S Kumar<!-- fictionistique; GitHub -->,
 Dan Winship,
 David Andersson,
 David Flanagan,
@@ -1978,7 +1963,6 @@ Martin Hassman,
 Mike Pennisi,
 Mohamed Zergaoui,
 Ms2ger,
-Noam Rosenthal,
 Odin Hørthe Omdal,
 Olli Pettay,
 Pawel Glowacki,
@@ -2021,5 +2005,7 @@ the HTML Standard (then Web Applications 1.0). [[!HTML]]
 {{ProgressEvent}} class as part of the
 <a href=https://www.w3.org/TR/2008/REC-SVGTiny12-20081222/svgudom.html>SVG Micro DOM</a>.
 
-<p>This standard is written by <a href=https://annevankesteren.nl/ lang=nl>Anne van Kesteren</a>
-(<a href=https://www.apple.com/>Apple</a>, <a href=mailto:annevk@annevk.nl>annevk@annevk.nl</a>).
+<p>This standard is written by
+<a href=https://annevankesteren.nl/ lang=nl>Anne van Kesteren</a>
+(<a href=https://www.mozilla.org/>Mozilla</a>,
+<a href=mailto:annevk@annevk.nl>annevk@annevk.nl</a>).

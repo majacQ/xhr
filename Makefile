@@ -1,5 +1,5 @@
 SHELL=/bin/bash -o pipefail
-.PHONY: local remote deploy review
+.PHONY: local remote deploy
 
 remote: xhr.bs
 	@ (HTTP_STATUS=$$(curl https://api.csswg.org/bikeshed/ \
@@ -16,12 +16,8 @@ remote: xhr.bs
 	);
 
 local: xhr.bs
-	bikeshed spec xhr.bs xhr.html --md-Text-Macro="COMMIT-SHA LOCAL COPY"
+	bikeshed spec xhr.bs xhr.html --md-Text-Macro="COMMIT-SHA LOCAL-COPY"
 
 deploy: xhr.bs
 	curl --remote-name --fail https://resources.whatwg.org/build/deploy.sh
 	bash ./deploy.sh
-
-review: xhr.bs
-	curl --remote-name --fail https://resources.whatwg.org/build/review.sh
-	bash ./review.sh
